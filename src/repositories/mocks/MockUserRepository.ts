@@ -1,6 +1,6 @@
 import { IUserEntity, IUserRepository } from '../../types/user.types';
 import { IUser } from '../../services/database/models/user';
-import { ResultSuccess } from '../../types/common.types';
+import { TResultSuccess } from '../../types/common.types';
 
 class MockUserRepository implements IUserRepository {
   private data : IUser[];
@@ -19,7 +19,7 @@ class MockUserRepository implements IUserRepository {
 
   persist = async (input: IUserEntity) => {
     console.log('persist', input, this);
-    return { success: true, value: true } as ResultSuccess<boolean>;
+    return { success: true, value: true } as TResultSuccess<boolean>;
   };
 
   remove = async (id: string) => {

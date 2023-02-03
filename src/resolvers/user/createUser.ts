@@ -4,14 +4,18 @@ import { IUserRepository } from '../../types/user.types';
 import UserRepository from '../../repositories/UserRepository';
 import { Result } from '../../types/common.types';
 
+interface IReqBody {
+  phone: string;
+  code: string;
+}
+
 export default async (
-  req: Request,
+  req: Request<any, any, IReqBody>,
   res: Response<Result<undefined>>,
   next: NextFunction,
   userRepository: IUserRepository = new UserRepository(),
 ): Promise<void> => {
-  const { phone } = <{ phone: string }>req.body;
-  const { code } = req.body;
+  const { phone, code } = req.body;
 
   const newUser = new User({ phone });
   const newUserValidate = newUser.validate();

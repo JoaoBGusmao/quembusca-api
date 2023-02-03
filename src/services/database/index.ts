@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 mongoose.set('strictQuery', true);
 
 export const startup = async () => {
-  const uri: string = process.env.DB_CONN_STRING ?? '';
+  const uri = process.env.DB_CONN_STRING || '';
 
   await mongoose.connect(uri);
 

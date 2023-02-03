@@ -1,6 +1,6 @@
-import { Data } from './Data';
+import { IData } from './IData';
 
-class PhoneData implements Data<string> {
+class PhoneData implements IData<string> {
   data;
 
   constructor(readonly phone: string) {

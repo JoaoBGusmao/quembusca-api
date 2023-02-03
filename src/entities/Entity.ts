@@ -5,18 +5,15 @@ export interface IEntityData {
 }
 
 export interface IEntity<T extends IEntityData> {
-  data: T | undefined;
-
+  data: T;
   getData: () => T;
   validate: () => Partial<{ [key in keyof T]: boolean }>
 }
 
 export abstract class Entity<T extends IEntityData> implements IEntity<T> {
-  data: T | undefined;
+  data;
 
-  public constructor(
-    input: Partial<T>,
-  ) {
+  public constructor(input: Partial<T>) {
     this.data = {
       id: input.id ?? uuid(),
       ...input,
