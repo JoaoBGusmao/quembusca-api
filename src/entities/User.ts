@@ -2,7 +2,7 @@ import PhoneData from '../data/PhoneData';
 import { IUserEntity, IUserEntityData } from '../types/user.types';
 import { Entity } from './Entity';
 
-type TValidateUserResponse = Partial<{ [key in keyof IUserEntityData]: boolean }>
+type TValidateUserResponse = Partial<{ [key in keyof IUserEntityData]: boolean }>;
 
 class User extends Entity<IUserEntityData> implements IUserEntity {
   public validate = (): TValidateUserResponse => {

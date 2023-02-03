@@ -3,6 +3,8 @@ import User from '../../entities/User';
 import { IUserRepository } from '../../types/user.types';
 import UserRepository from '../../repositories/UserRepository';
 import { Result } from '../../types/common.types';
+import ErrorMessageEnum from '../../types/error-message.enum';
+import ErrorLocationEnum from '../../types/error-location.enum';
 
 interface IReqBody {
   phone: string;
@@ -21,7 +23,11 @@ export default async (
   const newUserValidate = newUser.validate();
 
   if (!newUserValidate || !newUserValidate.phone) {
-    res.json({ success: false, error: 'INVALID_PHONE', location: 'CREATE_USER' });
+    res.json({
+      success: false,
+      error: ErrorMessageEnum.INVALID_PHONE,
+      location: ErrorLocationEnum.CREATE_USER,
+    });
 
     return;
   }
