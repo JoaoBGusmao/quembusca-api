@@ -1,18 +1,26 @@
 import { Result } from '../types/common.types';
-import { IUserEntity, IUserRepository } from '../types/user.types';
+import { IUserEntity, IUserEntityData, IUserRepository } from '../types/user.types';
 import ErrorMessageEnum from '../types/error-message.enum';
 import ErrorLocationEnum from '../types/error-location.enum';
 
 class UserRepository implements IUserRepository {
-  get = async (id: string) => {
+  get = async (id: string) : Promise<Result<IUserEntityData>> => {
     console.log('get', id, this);
     return {
-      id: '123',
-      phone: 'aa',
+      success: true,
+      value: {
+        id: '123',
+        phone: 'aa',
+      },
     };
   };
 
-  persist = async (input: IUserEntity) : Promise<Result<boolean>> => {
+  findByPhone = async (phone: string): Promise<Result<IUserEntityData>> => {
+    console.log('get', phone, this);
+    return { success: true, value: { id: '123', phone: 'aa' } };
+  };
+
+  persist = async (input: IUserEntity) : Promise<Result<IUserEntityData>> => {
     console.log(input, this);
 
     if (!input) {
@@ -22,7 +30,7 @@ class UserRepository implements IUserRepository {
         location: ErrorLocationEnum.USER_REPOSITORY,
       };
     }
-    return { success: true, value: true };
+    return { success: true, value: { id: '123', phone: '1111111' } };
   };
 
   remove = async (id: string) => {

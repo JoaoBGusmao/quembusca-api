@@ -13,6 +13,8 @@ class User extends Entity<IUserEntityData> implements IUserEntity {
       phone: new PhoneData(phone).validate(),
     };
   };
+
+  generateAuthToken = () => `CHANGE_${this.getData().id}:${this.getData().phone}`;
 }
 
 export default User;

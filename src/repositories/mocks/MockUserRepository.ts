@@ -1,25 +1,71 @@
-import { IUserEntity, IUserRepository } from '../../types/user.types';
+import { v4 as uuid } from 'uuid';
+import { IUserEntityData, IUserEntity, IUserRepository } from '../../types/user.types';
 import { IUser } from '../../services/database/models/user';
-import { TResultSuccess } from '../../types/common.types';
+import { Result, TResultSuccess } from '../../types/common.types';
+import ErrorMessageEnum from '../../types/error-message.enum';
+import ErrorLocationEnum from '../../types/error-location.enum';
 
 class MockUserRepository implements IUserRepository {
-  private data : IUser[];
+  private data : IUser[] = [];
 
-  constructor(preloaded: IUser[]) {
-    this.data = preloaded;
-  }
+  get = async (id: string) : Promise<Result<IUserEntityData>> => {
+    const userFound = this.data.find((storedUser) => storedUser.id === id);
 
-  get = async (id: string) => {
-    console.log('get', id, this);
+    if (id !== '' || !userFound) {
+      return {
+        success: false,
+        error: ErrorMessageEnum.USER_NOT_FOUND,
+        location: ErrorLocationEnum.USER_REPOSITORY,
+      };
+    }
+
     return {
-      id: '123',
-      phone: 'aa',
+      success: true,
+      value: {
+        id: userFound.id,
+        phone: userFound.phone,
+      },
+    };
+  };
+
+  findByPhone = async (phone: string) : Promise<Result<IUserEntityData>> => {
+    const userFound = this.data.find((storedUser) => storedUser.id === phone);
+
+    if (phone === '' || !userFound) {
+      return {
+        success: false,
+        error: ErrorMessageEnum.USER_NOT_FOUND,
+        location: ErrorLocationEnum.USER_REPOSITORY,
+      };
+    }
+
+    return {
+      success: true,
+      value: {
+        id: userFound.id,
+        phone: userFound.phone,
+      },
     };
   };
 
   persist = async (input: IUserEntity) => {
-    console.log('persist', input, this);
-    return { success: true, value: true } as TResultSuccess<boolean>;
+    const inputData = input.getData();
+
+    const id = inputData.id ?? uuid();
+    const newData = {
+      id,
+      phone: inputData.phone,
+    } as IUser;
+
+    this.data = [
+      ...this.data,
+      newData,
+    ];
+
+    return {
+      success: true,
+      value: newData,
+    } as TResultSuccess<IUserEntityData>;
   };
 
   remove = async (id: string) => {

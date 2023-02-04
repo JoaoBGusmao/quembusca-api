@@ -1,7 +1,10 @@
+import ErrorLocationEnum from './error-location.enum';
+import ErrorMessageEnum from './error-message.enum';
+
 export type TResultError = {
   success: false,
-  error: string,
-  location: string
+  error: ErrorMessageEnum,
+  location: ErrorLocationEnum
 };
 
 export type TResultSuccess<T> = {
