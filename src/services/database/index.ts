@@ -3,9 +3,7 @@ import mongoose from 'mongoose';
 mongoose.set('strictQuery', true);
 
 export const startup = async () => {
-  const uri: string = process.env.DB_CONN_STRING ?? '';
-
-  await mongoose.connect(uri);
+  await mongoose.connect(process.env.DB_CONN_STRING);
 
   console.log('Connectd to service: Database');
 };

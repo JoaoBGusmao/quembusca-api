@@ -1,18 +1,12 @@
 import PhoneData from '../data/PhoneData';
 import { IUserEntity, IUserEntityData } from '../types/user.types';
-import { Entity } from './Entitiy';
+import { Entity } from './Entity';
+
+type TValidateUserResponse = Partial<{ [key in keyof IUserEntityData]: boolean }>;
 
 class User extends Entity<IUserEntityData> implements IUserEntity {
-  public validate = () :
-  Partial<{ [key in keyof IUserEntityData]: boolean }> => {
-    if (!this.data) {
-      return {};
-    }
-
-    const {
-      id,
-      phone,
-    } = this.data;
+  public validate = (): TValidateUserResponse => {
+    const { id, phone } = this.data;
 
     return {
       id: id !== '',
