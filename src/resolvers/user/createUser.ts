@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import User from '../../entities/User';
 import { IUserRepository } from '../../types/user.types';
 import UserRepository from '../../repositories/UserRepository';
-import { Result, TResultError } from '../../types/common.types';
+import { Result, TResultError, TResultSuccess } from '../../types/common.types';
 import ErrorMessageEnum from '../../types/error-message.enum';
 import ErrorLocationEnum from '../../types/error-location.enum';
 import AuthRepository, { IAuthRepository } from '../../repositories/AuthRepository';
@@ -21,6 +21,13 @@ const getError = (error: ErrorMessageEnum, location: ErrorLocationEnum) : TResul
   success: false,
   error,
   location,
+});
+
+const getSuccess = (userInstance: User) : TResultSuccess<ISuccessfulLogin> => ({
+  success: true,
+  value: {
+    token: userInstance.generateAuthToken(),
+  },
 });
 
 export default async (
@@ -72,6 +79,15 @@ export default async (
     });
 
     await authRepository.remove(authUser.value.id);
+
+    if (userWithThisPhone.success) {
+      const userInstance = new User(userWithThisPhone.value);
+
+      res.json(getSuccess(userInstance));
+
+      return;
+    }
+
     const insertedUser = await userRepository.persist(userToInsert);
 
     if (!insertedUser.success) {
@@ -86,20 +102,16 @@ export default async (
 
     const insertedInstance = new User(insertedUser.value);
 
-    res.json({
-      success: true,
-      value: {
-        token: insertedInstance.generateAuthToken(),
-      },
-    });
-
+    res.json(getSuccess(insertedInstance));
     return;
   }
 
   if (!userWithThisPhone.success && userWithThisPhone.error === ErrorMessageEnum.USER_NOT_FOUND) {
+    await authRepository.removeByPhone(userData.phone);
+
     const OTPCode = codeGenerator();
 
-    authRepository.persist(user, OTPCode);
+    await authRepository.persist(user, OTPCode);
 
     res.json({ success: true, value: undefined });
     return;

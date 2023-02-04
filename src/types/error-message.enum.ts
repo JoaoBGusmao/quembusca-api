@@ -5,6 +5,7 @@ enum ErrorMessageEnum {
   AUTH_CODE_EXPIRED = 'AUTH_CODE_EXPIRED',
   AUTH_WRONG_CODE = 'AUTH_WRONG_CODE',
   UNKNOWN = 'UNKNOWN',
+  REMOVE_NO_EFFECT = 'REMOVE_NO_EFFECT',
 }
 
 export default ErrorMessageEnum;

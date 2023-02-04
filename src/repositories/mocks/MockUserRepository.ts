@@ -29,7 +29,7 @@ class MockUserRepository implements IUserRepository {
   };
 
   findByPhone = async (phone: string) : Promise<Result<IUserEntityData>> => {
-    const userFound = this.data.find((storedUser) => storedUser.id === phone);
+    const userFound = this.data.find((storedUser) => storedUser.phone === phone);
 
     if (phone === '' || !userFound) {
       return {
@@ -70,8 +70,10 @@ class MockUserRepository implements IUserRepository {
 
   remove = async (id: string) => {
     console.log('delete', id, this);
-    return true;
+    return { success: true, value: true } as TResultSuccess<boolean>;
   };
+
+  getAllData = (): IUser[] => this.data;
 }
 
 export default MockUserRepository;

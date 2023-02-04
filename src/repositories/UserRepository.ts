@@ -1,4 +1,4 @@
-import { Result } from '../types/common.types';
+import { Result, TResultSuccess } from '../types/common.types';
 import { IUserEntity, IUserEntityData, IUserRepository } from '../types/user.types';
 import ErrorMessageEnum from '../types/error-message.enum';
 import ErrorLocationEnum from '../types/error-location.enum';
@@ -35,7 +35,7 @@ class UserRepository implements IUserRepository {
 
   remove = async (id: string) => {
     console.log('delete', id, this);
-    return true;
+    return { success: true, value: true } as TResultSuccess<boolean>;
   };
 }
 

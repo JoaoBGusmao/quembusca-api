@@ -82,9 +82,53 @@ describe('createUser', () => {
     });
   });
 
-  it('should renew expiration and generate a new code', () => {
-    // TODO:
-    expect(true).toBe(true);
+  it('should expire the old code and request a new one', async () => {
+    const samePhone = '11999999999';
+    const req = {
+      body: {
+        phone: samePhone,
+      },
+    } as Request;
+
+    const res = {
+      json: jest.fn(),
+    } as unknown as Response;
+
+    const userRepository = new MockUserRepository();
+    const authRepository = new MockAuthRepository();
+
+    authRepository.persist(new User({
+      id: '111',
+      phone: '3399999999',
+    }), '111111');
+
+    authRepository.persist(new User({
+      id: '123',
+      phone: samePhone,
+    }), '333333');
+
+    await createUser(
+      req,
+      res,
+      () => {},
+      userRepository,
+      authRepository,
+      () => '444444',
+    );
+
+    const allAuthData = authRepository.getAllData();
+
+    const invalidAuthRequest = allAuthData.find((auth) => auth.id === '123');
+
+    expect(invalidAuthRequest).toBeFalsy();
+    expect(allAuthData.length).toBe(2);
+    expect(allAuthData[1].phone).toBe(req.body.phone);
+    expect(allAuthData[1].code).toBe('444444');
+
+    expect(res.json).toHaveBeenCalledWith({
+      success: true,
+      value: undefined,
+    });
   });
 
   it('should not authenticate a wrong code attempt', async () => {
@@ -188,6 +232,53 @@ describe('createUser', () => {
 
     const allAuthData = authRepository.getAllData();
     expect(allAuthData.length).toBe(0);
+
+    expect(res.json).toHaveBeenCalledWith({
+      success: true,
+      value: {
+        token: expect.any(String),
+      },
+    });
+  });
+
+  it('should return a token when confirmation code is right and account exist. Should not duplicate accounts', async () => {
+    const req = {
+      body: {
+        phone: '11999999999',
+        code: '123123',
+      },
+    } as Request;
+
+    const res = {
+      json: jest.fn(),
+    } as unknown as Response;
+
+    const userRepository = new MockUserRepository();
+    const authRepository = new MockAuthRepository();
+
+    authRepository.persist(new User({
+      id: '123',
+      phone: '11999999999',
+    }), '123123');
+
+    userRepository.persist(new User({
+      phone: '11999999999',
+    }));
+
+    await createUser(
+      req,
+      res,
+      () => {},
+      userRepository,
+      authRepository,
+    );
+
+    const allAuthData = authRepository.getAllData();
+    expect(allAuthData.length).toBe(0);
+
+    const allUserData = userRepository.getAllData();
+
+    expect(allUserData.length).toBe(1);
 
     expect(res.json).toHaveBeenCalledWith({
       success: true,

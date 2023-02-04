@@ -1,4 +1,4 @@
-import { Result } from '../types/common.types';
+import { Result, TResultSuccess } from '../types/common.types';
 import { IUserEntity } from '../types/user.types';
 import ErrorMessageEnum from '../types/error-message.enum';
 import ErrorLocationEnum from '../types/error-location.enum';
@@ -13,6 +13,7 @@ export interface IAuthData {
 export interface IAuthRepository extends Omit<IRepository<IUserEntity, IAuthData>, 'persist'> {
   persist(entity: IUserEntity, code: string) : Promise<Result<IAuthData>>;
   findByPhone(phone: string) : Promise<Result<IAuthData>>;
+  removeByPhone(phone: string) : Promise<Result<boolean>>
 }
 
 class AuthRepository implements IAuthRepository {
@@ -56,7 +57,12 @@ class AuthRepository implements IAuthRepository {
 
   remove = async (id: string) => {
     console.log('delete', id, this);
-    return true;
+    return { success: true, value: true } as TResultSuccess<boolean>;
+  };
+
+  removeByPhone = async (id: string) => {
+    console.log('delete', id, this);
+    return { success: true, value: true } as TResultSuccess<boolean>;
   };
 }
 

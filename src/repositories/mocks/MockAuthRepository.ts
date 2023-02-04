@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { IUserEntity } from '../../types/user.types';
-import { Result, TResultSuccess } from '../../types/common.types';
+import { Result, TResultError, TResultSuccess } from '../../types/common.types';
 import ErrorMessageEnum from '../../types/error-message.enum';
 import ErrorLocationEnum from '../../types/error-location.enum';
 import { IAuthData, IAuthRepository } from '../AuthRepository';
@@ -53,7 +53,7 @@ class MockAuthRepository implements IAuthRepository {
   persist = async (input: IUserEntity, code: string) => {
     const inputData = input.getData();
     const newData = {
-      id: uuid(),
+      id: inputData.id || uuid(),
       phone: inputData.phone,
       code,
     } as IAuth;
@@ -67,11 +67,35 @@ class MockAuthRepository implements IAuthRepository {
   };
 
   remove = async (id: string) => {
-    console.log('removing', id);
+    const beforeLength = this.data.length;
 
     this.data = this.data.filter((user) => user.id !== id);
 
-    return true;
+    if (this.data.length <= beforeLength) {
+      return {
+        success: false,
+        error: ErrorMessageEnum.REMOVE_NO_EFFECT,
+        location: ErrorLocationEnum.AUTH_REPOSITORY,
+      } as TResultError;
+    }
+
+    return { success: true, value: true } as TResultSuccess<boolean>;
+  };
+
+  removeByPhone = async (phone: string) => {
+    const beforeLength = this.data.length;
+
+    this.data = this.data.filter((user) => user.phone !== phone);
+
+    if (this.data.length <= beforeLength) {
+      return {
+        success: false,
+        error: ErrorMessageEnum.REMOVE_NO_EFFECT,
+        location: ErrorLocationEnum.AUTH_REPOSITORY,
+      } as TResultError;
+    }
+
+    return { success: true, value: true } as TResultSuccess<boolean>;
   };
 
   getAllData = (): IAuth[] => this.data;
