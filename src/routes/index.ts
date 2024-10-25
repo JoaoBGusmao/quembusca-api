@@ -1,8 +1,10 @@
 import express from 'express';
-import createUser from '../resolvers/user/createUser';
+import auth from '../resolvers/user/auth';
+import createTask from '../resolvers/task/createTask';
 
 const router = express.Router();
 
-const routes = router.post('/user/create', createUser);
+router.post('/user/auth', auth);
+router.post('/task/create', createTask);
 
-export default routes;
+export default router;

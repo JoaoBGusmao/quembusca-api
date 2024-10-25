@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import createUser from './createUser';
+import auth from './auth';
 import MockUserRepository from '../../repositories/mocks/MockUserRepository';
 import ErrorMessageEnum from '../../types/error-message.enum';
 import ErrorLocationEnum from '../../types/error-location.enum';
 import User from '../../entities/User';
 import MockAuthRepository from '../../repositories/mocks/MockAuthRepository';
 
-describe('createUser', () => {
+describe('auth', () => {
   it('success code request', async () => {
     const req = {
       body: {
@@ -18,7 +18,7 @@ describe('createUser', () => {
       json: jest.fn(),
     } as unknown as Response;
 
-    await createUser(req, res, () => {}, new MockUserRepository());
+    await auth(req, res, () => {}, new MockUserRepository());
 
     expect(res.json).toHaveBeenCalledWith({ success: true, value: undefined });
   });
@@ -34,7 +34,7 @@ describe('createUser', () => {
       json: jest.fn(),
     } as unknown as Response;
 
-    await createUser(req, res, () => {}, new MockUserRepository());
+    await auth(req, res, () => {}, new MockUserRepository());
 
     expect(res.json).toHaveBeenCalledWith({
       success: false,
@@ -62,7 +62,7 @@ describe('createUser', () => {
       phone: '22999999999',
     }), '111111');
 
-    await createUser(
+    await auth(
       req,
       res,
       () => {},
@@ -107,7 +107,7 @@ describe('createUser', () => {
       phone: samePhone,
     }), '333333');
 
-    await createUser(
+    await auth(
       req,
       res,
       () => {},
@@ -118,7 +118,7 @@ describe('createUser', () => {
 
     const allAuthData = authRepository.getAllData();
 
-    const invalidAuthRequest = allAuthData.find((auth) => auth.id === '123');
+    const invalidAuthRequest = allAuthData.find((authUser) => authUser.id === '123');
 
     expect(invalidAuthRequest).toBeFalsy();
     expect(allAuthData.length).toBe(2);
@@ -151,7 +151,7 @@ describe('createUser', () => {
       phone: '11999999999',
     }), '123123');
 
-    await createUser(
+    await auth(
       req,
       res,
       () => {},
@@ -184,7 +184,7 @@ describe('createUser', () => {
     const userRepository = new MockUserRepository();
     const authRepository = new MockAuthRepository();
 
-    await createUser(
+    await auth(
       req,
       res,
       () => {},
@@ -222,7 +222,7 @@ describe('createUser', () => {
       phone: '11999999999',
     }), '123123');
 
-    await createUser(
+    await auth(
       req,
       res,
       () => {},
@@ -265,7 +265,7 @@ describe('createUser', () => {
       phone: '11999999999',
     }));
 
-    await createUser(
+    await auth(
       req,
       res,
       () => {},
